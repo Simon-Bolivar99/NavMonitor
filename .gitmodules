@@ -1,0 +1,6 @@
+[submodule "extern/Marble"]
+	path = extern/Marble
+	url = https://invent.kde.org/education/marble.git
+[submodule "extern/marble"]
+	path = extern/marble
+	url = https://invent.kde.org/education/marble.git

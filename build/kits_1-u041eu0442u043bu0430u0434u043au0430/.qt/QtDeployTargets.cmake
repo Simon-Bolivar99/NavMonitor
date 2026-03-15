@@ -1,2 +1,0 @@
-set(__QT_DEPLOY_TARGET_NavMonitor_FILE /home/vagon/Projects/NavMonitor/src/build/kits_1-u041eu0442u043bu0430u0434u043au0430/NavMonitor)
-set(__QT_DEPLOY_TARGET_NavMonitor_TYPE EXECUTABLE)

@@ -1,6 +1,0 @@
-/home/vagon/Projects/NavMonitor/src/build/kits_1-u041eu0442u043bu0430u0434u043au0430/CMakeFiles/NavMonitor.dir
-/home/vagon/Projects/NavMonitor/src/build/kits_1-u041eu0442u043bu0430u0434u043au0430/CMakeFiles/NavMonitor_qmlimportscan.dir
-/home/vagon/Projects/NavMonitor/src/build/kits_1-u041eu0442u043bu0430u0434u043au0430/CMakeFiles/edit_cache.dir
-/home/vagon/Projects/NavMonitor/src/build/kits_1-u041eu0442u043bu0430u0434u043au0430/CMakeFiles/rebuild_cache.dir
-/home/vagon/Projects/NavMonitor/src/build/kits_1-u041eu0442u043bu0430u0434u043au0430/CMakeFiles/NavMonitor_autogen_timestamp_deps.dir
-/home/vagon/Projects/NavMonitor/src/build/kits_1-u041eu0442u043bu0430u0434u043au0430/CMakeFiles/NavMonitor_autogen.dir

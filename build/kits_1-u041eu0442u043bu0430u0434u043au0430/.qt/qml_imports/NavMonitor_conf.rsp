@@ -1,9 +1,0 @@
--rootPath
-/home/vagon/Projects/NavMonitor/src
--cmake-output
--output-file
-/home/vagon/Projects/NavMonitor/src/build/kits_1-u041eu0442u043bu0430u0434u043au0430/.qt/qml_imports/NavMonitor_conf.cmake
--importPath
-/home/vagon/Projects/NavMonitor/src/build/kits_1-u041eu0442u043bu0430u0434u043au0430
--importPath
-/usr/lib/qt6/qml

@@ -9,8 +9,8 @@
 #include <QGroupBox>
 #include <QFormLayout>
 
-#include <marble/GeoDataPlacemark.h>
-#include <marble/GeoDataStyle.h>
+#include <GeoDataPlacemark.h>
+#include <GeoDataStyle.h>
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
@@ -36,7 +36,7 @@ void MainWindow::init_gui()
 
     m_map->setProjection(Marble::Mercator);
     m_map->setMapThemeId("earth/openstreetmap/openstreetmap.dgml");
-    //m_map->centerOn( 59.9386, 30.3141 );
+    m_map->centerOn( 59.9386, 30.3141 );
 }
 
 void MainWindow::create_gui()
@@ -49,7 +49,7 @@ void MainWindow::create_gui()
 
     auto wgt = new QWidget( this );
 
-        auto lo = new QGridLayout( wgt  );
+        auto lo = new QVBoxLayout( wgt  );
             lo->setContentsMargins ( 0, 0, 0, 0 );
             lo->setSpacing ( 3 );
 
@@ -73,14 +73,9 @@ void MainWindow::create_gui()
                         lo_map->addWidget( m_map );
 
 
-            lo->addWidget( gbx_telemetry, 0, 0 );
-            lo->addWidget( gbx_map, 1 , 0 );
-
-            // lo->addWidget( m_lbl_lat, 1, 2 );
-            // lo->addWidget( m_lbl_lon, 2, 2 );
-
-            // lo->addWidget( new QLabel( "Широта:" ), 1, 1 );
-            // lo->addWidget( new QLabel( "Долгота:" ), 2, 1 );
+            lo->addWidget( gbx_telemetry, 0 );
+            lo->addWidget( gbx_map, 1 );
+            lo->addStretch();
 
     setCentralWidget( wgt );
 }

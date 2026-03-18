@@ -4,9 +4,11 @@
 
 #include <libgpsmm.h>
 
-#include <marble/MarbleWidget.h>
-#include <marble/GeoDataDocument.h>
-#include <marble/MarbleModel.h>
+//#include <limits.h>
+
+#include <MarbleWidget.h>
+#include <GeoDataDocument.h>
+#include <MarbleModel.h>
 
 class QLabel;
 class QTimer;
@@ -57,7 +59,7 @@ private:
 
     QTimer *m_timer = nullptr;
 
-    Marble::MarbleWidget *m_map = nullptr;
+   Marble::MarbleWidget *m_map = nullptr;
 
-    Marble::GeoDataDocument *m_markers_document = nullptr;
+   Marble::GeoDataDocument *m_markers_document = nullptr;
 };

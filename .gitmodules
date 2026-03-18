@@ -3,4 +3,4 @@
 	url = https://invent.kde.org/education/marble.git
 [submodule "extern/marble"]
 	path = extern/marble
-	url = https://invent.kde.org/education/marble.git
+	url = https://github.com/Simon-Bolivar99/marble.git

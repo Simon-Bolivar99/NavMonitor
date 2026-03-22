@@ -18,6 +18,52 @@ MainWindow::MainWindow(QWidget* parent)
     init();
 }
 
+void MainWindow::on_poll_gps()
+{
+    if ( !m_gpsmm )
+        return;
+
+    bool has_tpv = false;
+    TPV last_tpv;
+
+    // читаем только уже готовые данные, не блокируясь
+    int max_reads_per_tick = 5;
+
+    while ( max_reads_per_tick-- > 0 && m_gpsmm->waiting( 0 ) )
+    {
+        gps_data_t *data = m_gpsmm->read();
+
+        if ( data == nullptr )
+            return;
+
+        m_has_received_data = true;
+        m_last_data_timer.restart();
+
+        if ( data->fix.mode >= MODE_2D &&
+            std::isfinite( data->fix.latitude ) &&
+            std::isfinite( data->fix.longitude ) )
+        {
+            last_tpv.lat = data->fix.latitude;
+            last_tpv.lon = data->fix.longitude;
+
+            if ( std::isfinite( data->fix.altitude ) )
+                last_tpv.alt = data->fix.altitude;
+
+            has_tpv = true;
+        }
+    }
+
+    if ( has_tpv )
+    {
+        // обновляем только если координаты реально изменились
+        if ( m_tpv.lat != last_tpv.lat || m_tpv.lon != last_tpv.lon || m_tpv.alt != last_tpv.alt )
+        {
+            m_tpv = last_tpv;
+            update_telemetry();
+        }
+    }
+}
+
 void MainWindow::init()
 {
     create_gui();
@@ -82,37 +128,39 @@ void MainWindow::create_gui()
 
 void MainWindow::create_connections()
 {
-    connect( m_timer, &QTimer::timeout, this, [ this ](){
+    // connect( m_timer, &QTimer::timeout, this, [ this ](){
 
-        if( !m_gpsmm )
-            return;
+    //     if( !m_gpsmm )
+    //         return;
 
-        if( !m_gpsmm->waiting( 0 ) )
-            return;
+    //     if( !m_gpsmm->waiting( 0 ) )
+    //         return;
 
-        gps_data_t *data = m_gpsmm->read();
+    //     gps_data_t *data = m_gpsmm->read();
 
-        if( data == nullptr )
-        {
-            //emit errorOccurred( QStringLiteral( "Ошибка чтения данных из gpsd" ) );
-            return;
-        }
+    //     if( data == nullptr )
+    //     {
+    //         //emit errorOccurred( QStringLiteral( "Ошибка чтения данных из gpsd" ) );
+    //         return;
+    //     }
 
-        if( data->fix.mode >= MODE_2D )
-        {
-            m_lat = data->fix.latitude;
-            m_lon = data->fix.longitude;
+    //     if( data->fix.mode >= MODE_2D )
+    //     {
+    //         m_lat = data->fix.latitude;
+    //         m_lon = data->fix.longitude;
 
-            update_telemetry();
-            add_marker( m_lat, m_lon, "Точка", 3200 );
-        }
+    //         update_telemetry();
+    //         add_marker( m_lat, m_lon, "Точка", 3200 );
+    //     }
 
-        //emit satellitesUpdated( data->satellites_used, data->satellites_visible );
-    } );
+    //     //emit satellitesUpdated( data->satellites_used, data->satellites_visible );
+    // } );
+
+    connect( m_timer, &QTimer::timeout, this, &MainWindow::on_poll_gps );
 
     connect( m_btn_set_pos, &QPushButton::clicked, this, [ this ]() {
 
-        add_marker( m_lat, m_lon, "Точка", 3200 );
+        add_marker( m_tpv.lat, m_tpv.lon, "Точка", 3200 );
     });
 }
 
@@ -136,13 +184,13 @@ void MainWindow::create_model()
 
 void MainWindow::update_telemetry()
 {
-    m_lbl_lat->setText( QString( "%1" ).arg( m_lat, 0, 'f', 6 ) );
-    m_lbl_lon->setText( QString( "%1" ).arg( m_lon, 0, 'f', 6 ) );
+    m_lbl_lat->setText( QString( "%1" ).arg( m_tpv.lat, 0, 'f', 6 ) );
+    m_lbl_lon->setText( QString( "%1" ).arg( m_tpv.lon, 0, 'f', 6 ) );
 }
 
 bool MainWindow::start_gps()
 {
-    stom_gps();
+    stop_gps();
 
     m_gpsmm.reset( new gpsmm( host.toUtf8().constData(),
                           port.toUtf8().constData() ) );
@@ -165,7 +213,7 @@ bool MainWindow::start_gps()
     return true;
 }
 
-void MainWindow::stom_gps()
+void MainWindow::stop_gps()
 {
     m_timer->stop();
 
@@ -178,18 +226,18 @@ void MainWindow::stom_gps()
 
 void MainWindow::add_marker( double lat, double lon, const QString &name, int zoom_level )
 {
-    Marble::GeoDataPlacemark *placemark = new Marble::GeoDataPlacemark(name);
+    // Marble::GeoDataPlacemark *placemark = new Marble::GeoDataPlacemark(name);
 
-    // Важно: порядок — долгота, широта!
-    placemark->setCoordinate(Marble::GeoDataCoordinates(lon, lat, 0.0,
-                                                        Marble::GeoDataCoordinates::Degree));
+    // // Важно: порядок — долгота, широта!
+    // placemark->setCoordinate(Marble::GeoDataCoordinates(lon, lat, 0.0,
+    //                                                     Marble::GeoDataCoordinates::Degree));
 
     // // (по желанию) красивая иконка — можно позже добавить ресурс
     // Marble::GeoDataStyle::Ptr style(new Marble::GeoDataStyle());
     // style->iconStyle().setIconPath(":/icons/pin.png");
     // placemark->setStyle(style);
 
-    m_markers_document->append( placemark );   // ← метка сразу появляется!
+    // m_markers_document->append( placemark );   // ← метка сразу появляется!
 
     // Центрируем карту на новую метку (по желанию)
     m_map->centerOn(lon, lat);

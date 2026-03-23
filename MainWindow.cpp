@@ -20,43 +20,50 @@ MainWindow::MainWindow(QWidget* parent)
 
 void MainWindow::on_poll_gps()
 {
-    if ( !m_gpsmm )
+    if (!m_gpsmm)
         return;
 
+    bool got_any_data = false;
     bool has_tpv = false;
-    TPV last_tpv;
+    TPV last_tpv{};
 
-    // читаем только уже готовые данные, не блокируясь
-    int max_reads_per_tick = 5;
-
-    while ( max_reads_per_tick-- > 0 && m_gpsmm->waiting( 0 ) )
+    // Просто проверяем, есть ли уже данные в буфере (неблокирующе)
+    while (m_gpsmm->waiting(0))
     {
         gps_data_t *data = m_gpsmm->read();
-
-        if ( data == nullptr )
+        if (data == nullptr)
             return;
 
+        got_any_data = true;
         m_has_received_data = true;
         m_last_data_timer.restart();
 
-        if ( data->fix.mode >= MODE_2D &&
-            std::isfinite( data->fix.latitude ) &&
-            std::isfinite( data->fix.longitude ) )
+        if (data->fix.mode >= MODE_2D &&
+            std::isfinite(data->fix.latitude) &&
+            std::isfinite(data->fix.longitude))
         {
             last_tpv.lat = data->fix.latitude;
             last_tpv.lon = data->fix.longitude;
 
-            if ( std::isfinite( data->fix.altitude ) )
+            if (std::isfinite(data->fix.altitude))
                 last_tpv.alt = data->fix.altitude;
+            else
+                last_tpv.alt = std::numeric_limits<double>::quiet_NaN();
 
             has_tpv = true;
         }
     }
 
-    if ( has_tpv )
+    if (got_any_data && has_tpv)
     {
-        // обновляем только если координаты реально изменились
-        if ( m_tpv.lat != last_tpv.lat || m_tpv.lon != last_tpv.lon || m_tpv.alt != last_tpv.alt )
+        const bool changed =
+            !std::isfinite(m_tpv.lat) ||
+            !std::isfinite(m_tpv.lon) ||
+            m_tpv.lat != last_tpv.lat ||
+            m_tpv.lon != last_tpv.lon ||
+            m_tpv.alt != last_tpv.alt;
+
+        if (changed)
         {
             m_tpv = last_tpv;
             update_telemetry();

@@ -59,7 +59,7 @@ private:
     void add_marker( double lat, double lon, const QString &name, int zoom_level );
 
 private:
-    QString host = "127.0.0.1";
+    QString host = "192.168.0.98";
     QString port = "2947";
 
     // double m_lat = dnan;
